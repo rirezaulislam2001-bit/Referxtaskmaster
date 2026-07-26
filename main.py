@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 import asyncio
 import os
-
+from database import init_db
 TOKEN = os.getenv("BOT_TOKEN")
 
 bot = Bot(token=TOKEN)
@@ -34,7 +34,9 @@ async def deposit(message: Message):
         "👤 Admin: @referxtaskmaster"
     )
 async def main():
+    await init_db()
     await dp.start_polling(bot)
+    a
 
 if __name__ == "__main__":
     asyncio.run(main())
