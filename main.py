@@ -24,7 +24,15 @@ async def start(message: Message):
         "🎉 REFERXTASKMASTER_BOT-এ স্বাগতম!",
         reply_markup=menu
     )
-
+@dp.message(lambda message: message.text == "📥 Deposit")
+async def deposit(message: Message):
+    await message.answer(
+        "💳 Manual Deposit\n\n"
+        "📱 bKash (Personal): 01330930330\n"
+        "📱 Nagad (Personal): 01841245373\n\n"
+        "✅ টাকা পাঠানোর পর আপনার Transaction ID (TrxID) এবং Screenshot অ্যাডমিনকে পাঠান।\n\n"
+        "👤 Admin: @referxtaskmaster"
+    )
 async def main():
     await dp.start_polling(bot)
 
