@@ -36,7 +36,5 @@ async def deposit(message: Message):
 async def main():
     await init_db()
     await dp.start_polling(bot)
-    
-
 if __name__ == "__main__":
     asyncio.run(main())
