@@ -48,7 +48,7 @@ async def pending_deposits(message: Message):
                     InlineKeyboardButton(
                         text="❌ Reject",
                         callback_data=f"reject:{deposit_id}"
-                    )
+                    ),
                 ]
             ]
         )
@@ -62,5 +62,5 @@ async def pending_deposits(message: Message):
                 f"💰 Amount: {amount} Tk\n"
                 f"🔑 TrxID: {trxid}"
             ),
-            reply_markup=keyboard
+            reply_markup=keyboard,
         )
