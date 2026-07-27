@@ -8,6 +8,7 @@ import os
 
 from database import init_db
 from handlers.deposit import router as deposit_router
+from handlers.admin import router as admin_router
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -24,7 +25,6 @@ menu = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-
 @dp.message(Command("start"))
 async def start(message: Message):
     await message.answer(
@@ -32,15 +32,14 @@ async def start(message: Message):
         reply_markup=menu
     )
 
-
 async def main():
     await init_db()
 
-    # Deposit Router
+    # Routers
     dp.include_router(deposit_router)
+    dp.include_router(admin_router)
 
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
