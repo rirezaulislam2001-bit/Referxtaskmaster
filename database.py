@@ -24,6 +24,17 @@ async def init_db():
         )
         """)
 
+        await db.execute("""
+        CREATE TABLE IF NOT EXISTS withdraws(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            amount INTEGER,
+            method TEXT,
+            number TEXT,
+            status TEXT DEFAULT 'pending'
+        )
+        """)
+
         await db.commit()
 
 
@@ -62,6 +73,8 @@ async def get_balance(user_id: int):
         return 0
 
 
+# ------------------ Deposit ------------------
+
 async def save_deposit(user_id, amount, trxid, screenshot):
     async with aiosqlite.connect(DB_NAME) as db:
         await db.execute(
@@ -90,7 +103,7 @@ async def get_deposit(deposit_id):
             """
             SELECT user_id, amount, status
             FROM deposits
-            WHERE id = ?
+            WHERE id=?
             """,
             (deposit_id,)
         )
@@ -111,5 +124,47 @@ async def reject_deposit(deposit_id):
         await db.execute(
             "UPDATE deposits SET status='rejected' WHERE id=?",
             (deposit_id,)
+        )
+        await db.commit()
+
+
+# ------------------ Withdraw ------------------
+
+async def save_withdraw(user_id, amount, method, number):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            """
+            INSERT INTO withdraws(user_id, amount, method, number)
+            VALUES (?, ?, ?, ?)
+            """,
+            (user_id, amount, method, number)
+        )
+        await db.commit()
+
+
+async def get_pending_withdraws():
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.execute("""
+            SELECT id, user_id, amount, method, number
+            FROM withdraws
+            WHERE status='pending'
+        """)
+        return await cursor.fetchall()
+
+
+async def approve_withdraw(withdraw_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            "UPDATE withdraws SET status='approved' WHERE id=?",
+            (withdraw_id,)
+        )
+        await db.commit()
+
+
+async def reject_withdraw(withdraw_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            "UPDATE withdraws SET status='rejected' WHERE id=?",
+            (withdraw_id,)
         )
         await db.commit()
