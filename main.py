@@ -9,10 +9,11 @@ import os
 from database import init_db, add_user
 from handlers.deposit import router as deposit_router
 from handlers.admin import router as admin_router
+from handlers.profile import router as profile_router
 
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = os.getenv 8941867493:AAEhZBRYoQ5XkKTbcroFtGZEMApBRgXo9Wg
 
-bot = Bot(token=TOKEN)
+bot = Bot 8941867493:AAEhZBRYoQ5XkKTbcroFtGZEMApBRgXo9Wg
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
@@ -28,7 +29,6 @@ menu = ReplyKeyboardMarkup(
 
 @dp.message(Command("start"))
 async def start(message: Message):
-    # User-কে Database-এ Save করবে
     await add_user(message.from_user.id)
 
     await message.answer(
@@ -38,14 +38,13 @@ async def start(message: Message):
 
 
 async def main():
-    # Database তৈরি
     await init_db()
 
     # Routers
+    dp.include_router(profile_router)
     dp.include_router(deposit_router)
     dp.include_router(admin_router)
 
-    # Bot Start
     await dp.start_polling(bot)
 
 
