@@ -24,3 +24,26 @@ async def init_db():
         """)
 
         await db.commit()
+
+
+async def add_balance(user_id: int, amount: int):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            "UPDATE users SET balance = balance + ? WHERE user_id = ?",
+            (amount, user_id)
+        )
+        await db.commit()
+
+
+async def get_balance(user_id: int):
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.execute(
+            "SELECT balance FROM users WHERE user_id = ?",
+            (user_id,)
+        )
+        row = await cursor.fetchone()
+
+        if row:
+            return row[0]
+
+        return 0
