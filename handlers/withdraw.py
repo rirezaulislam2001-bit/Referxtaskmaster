@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from states import WithdrawState
 from config import ADMIN_ID
-from database import get_balance
+from database import get_balance, save_withdraw
 
 router = Router()
 
@@ -33,7 +33,16 @@ async def get_amount(message: Message, state: FSMContext):
         await message.answer("❌ শুধু সংখ্যা লিখুন।")
         return
 
-    await state.update_data(amount=int(message.text))
+    balance = await get_balance(message.from_user.id)
+    amount = int(message.text)
+
+    if amount > balance:
+        await message.answer(
+            f"❌ আপনার Balance মাত্র {balance} Tk।"
+        )
+        return
+
+    await state.update_data(amount=amount)
     await state.set_state(WithdrawState.method)
 
     await message.answer(
@@ -58,15 +67,22 @@ async def get_method(message: Message, state: FSMContext):
     await state.update_data(method=method)
     await state.set_state(WithdrawState.number)
 
-    await message.answer(
-        "📱 আপনার Payment Number লিখুন।"
-    )
+    await message.answer("📱 আপনার Payment Number লিখুন।")
 
 
 @router.message(WithdrawState.number)
 async def get_number(message: Message, state: FSMContext):
     data = await state.get_data()
 
+    # Database-এ Withdraw Save
+    await save_withdraw(
+        user_id=message.from_user.id,
+        amount=data["amount"],
+        method=data["method"],
+        number=message.text,
+    )
+
+    # Admin Notification
     await message.bot.send_message(
         chat_id=ADMIN_ID,
         text=(
