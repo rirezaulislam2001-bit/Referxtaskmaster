@@ -2,7 +2,8 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from states import DepositState
-
+from config import ADMIN_ID
+from aiogram import Bot
 router = Router()
 
 @router.message(lambda message: message.text == "📥 Deposit")
@@ -27,7 +28,17 @@ async def get_screenshot(message: Message, state: FSMContext):
         return
 
     data = await state.get_data()
-
+await message.bot.send_photo(
+    chat_id=ADMIN_ID,
+    photo=message.photo[-1].file_id,
+    caption=(
+        f"📥 নতুন Deposit Request\n\n"
+        f"👤 User: {message.from_user.full_name}\n"
+        f"🆔 User ID: {message.from_user.id}\n"
+        f"💰 Amount: {data['amount']}\n"
+        f"🔑 TrxID: {data['trxid']}"
+    )
+)
     await message.answer(
         "✅ আপনার Deposit Request সফলভাবে জমা হয়েছে।\n"
         "অ্যাডমিন যাচাই করার পর আপনার ব্যালেন্স আপডেট করা হবে।"
