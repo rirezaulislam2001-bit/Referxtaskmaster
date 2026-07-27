@@ -19,6 +19,7 @@ async def init_db():
             user_id INTEGER,
             amount INTEGER,
             trxid TEXT,
+            screenshot TEXT,
             status TEXT DEFAULT 'pending'
         )
         """)
@@ -47,3 +48,15 @@ async def get_balance(user_id: int):
             return row[0]
 
         return 0
+
+
+async def save_deposit(user_id, amount, trxid, screenshot):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            """
+            INSERT INTO deposits(user_id, amount, trxid, screenshot)
+            VALUES (?, ?, ?, ?)
+            """,
+            (user_id, amount, trxid, screenshot)
+        )
+        await db.commit()
