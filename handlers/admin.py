@@ -3,6 +3,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 
 from config import ADMIN_ID
+from database import get_pending_deposits
 
 router = Router()
 
@@ -14,8 +15,36 @@ async def admin_panel(message: Message):
 
     await message.answer(
         "👮‍♂️ Admin Panel\n\n"
-        "📥 Pending Deposits\n"
-        "💰 Manage Balance\n"
-        "👥 Manage Users\n\n"
-        "✅ Admin Panel চালু হয়েছে।"
+        "Commands:\n"
+        "/pending - Pending Deposit List"
     )
+
+
+@router.message(Command("pending"))
+async def pending_deposits(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    deposits = await get_pending_deposits()
+
+    if not deposits:
+        await message.answer("✅ কোনো Pending Deposit নেই।")
+        return
+
+    for deposit in deposits:
+        deposit_id, user_id, amount, trxid, screenshot = deposit
+
+        await message.bot.send_photo(
+            chat_id=message.chat.id,
+            photo=screenshot,
+            caption=(
+                f"📥 Deposit ID: {deposit_id}\n\n"
+                f"👤 User ID: {user_id}\n"
+                f"💰 Amount: {amount} Tk\n"
+                f"🔑 TrxID: {trxid}\n\n"
+                f"Approve:\n"
+                f"/approve_{deposit_id}\n\n"
+                f"Reject:\n"
+                f"/reject_{deposit_id}"
+            )
+        )
