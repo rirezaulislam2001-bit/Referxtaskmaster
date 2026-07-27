@@ -71,6 +71,19 @@ async def get_pending_deposits():
         return await cursor.fetchall()
 
 
+async def get_deposit(deposit_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.execute(
+            """
+            SELECT user_id, amount, status
+            FROM deposits
+            WHERE id = ?
+            """,
+            (deposit_id,)
+        )
+        return await cursor.fetchone()
+
+
 async def approve_deposit(deposit_id):
     async with aiosqlite.connect(DB_NAME) as db:
         await db.execute(
