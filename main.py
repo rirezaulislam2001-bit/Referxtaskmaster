@@ -11,9 +11,9 @@ from handlers.deposit import router as deposit_router
 from handlers.admin import router as admin_router
 from handlers.profile import router as profile_router
 
-TOKEN = os.getenv 8941867493:AAEhZBRYoQ5XkKTbcroFtGZEMApBRgXo9Wg
+TOKEN = os.getenv 8941867493:AAFWqKa0ZnBZtCcaETjBKlZPjOU7IZG0fSs
 
-bot = Bot 8941867493:AAEhZBRYoQ5XkKTbcroFtGZEMApBRgXo9Wg
+bot = Bot 8941867493:AAFWqKa0ZnBZtCcaETjBKlZPjOU7IZG0fSs
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
