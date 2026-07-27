@@ -27,6 +27,18 @@ async def init_db():
         await db.commit()
 
 
+async def add_user(user_id: int, referrer=None):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            """
+            INSERT OR IGNORE INTO users(user_id, referrer)
+            VALUES (?, ?)
+            """,
+            (user_id, referrer)
+        )
+        await db.commit()
+
+
 async def add_balance(user_id: int, amount: int):
     async with aiosqlite.connect(DB_NAME) as db:
         await db.execute(
@@ -46,6 +58,7 @@ async def get_balance(user_id: int):
 
         if row:
             return row[0]
+
         return 0
 
 
