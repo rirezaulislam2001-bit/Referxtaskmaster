@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from states import DepositState
 from config import ADMIN_ID
-from aiogram import Bot
+
 router = Router()
 
 @router.message(lambda message: message.text == "📥 Deposit")
@@ -19,15 +19,18 @@ async def get_amount(message: Message, state: FSMContext):
 async def get_trxid(message: Message, state: FSMContext):
     await state.update_data(trxid=message.text)
     await state.set_state(DepositState.screenshot)
-    await message.answer(
+        await message.answer(
         "📷 এখন আপনার পেমেন্টের Screenshot পাঠান।"
-    )@router.message(DepositState.screenshot)
+    )
+
+@router.message(DepositState.screenshot)
 async def get_screenshot(message: Message, state: FSMContext):
     if not message.photo:
         await message.answer("❌ অনুগ্রহ করে একটি Screenshot পাঠান।")
         return
 
-    data = await state.get_data()
+    data = await state.get_data()    
+
 await message.bot.send_photo(
     chat_id=ADMIN_ID,
     photo=message.photo[-1].file_id,
