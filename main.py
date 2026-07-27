@@ -6,7 +6,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 import asyncio
 import os
 
-from database import init_db
+from database import init_db, add_user
 from handlers.deposit import router as deposit_router
 from handlers.admin import router as admin_router
 
@@ -25,21 +25,29 @@ menu = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+
 @dp.message(Command("start"))
 async def start(message: Message):
+    # User-কে Database-এ Save করবে
+    await add_user(message.from_user.id)
+
     await message.answer(
         "🎉 REFERXTASKMASTER_BOT-এ স্বাগতম!",
         reply_markup=menu
     )
 
+
 async def main():
+    # Database তৈরি
     await init_db()
 
     # Routers
     dp.include_router(deposit_router)
     dp.include_router(admin_router)
 
+    # Bot Start
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
