@@ -1,7 +1,7 @@
 import aiosqlite
-from config import ADMIN_ID
-from aiogram import Bot
+
 DB_NAME = "bot.db"
+
 
 async def init_db():
     async with aiosqlite.connect(DB_NAME) as db:
