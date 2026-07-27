@@ -46,7 +46,6 @@ async def get_balance(user_id: int):
 
         if row:
             return row[0]
-
         return 0
 
 
@@ -58,5 +57,33 @@ async def save_deposit(user_id, amount, trxid, screenshot):
             VALUES (?, ?, ?, ?)
             """,
             (user_id, amount, trxid, screenshot)
+        )
+        await db.commit()
+
+
+async def get_pending_deposits():
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.execute("""
+            SELECT id, user_id, amount, trxid, screenshot
+            FROM deposits
+            WHERE status='pending'
+        """)
+        return await cursor.fetchall()
+
+
+async def approve_deposit(deposit_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            "UPDATE deposits SET status='approved' WHERE id=?",
+            (deposit_id,)
+        )
+        await db.commit()
+
+
+async def reject_deposit(deposit_id):
+    async with aiosqlite.connect(DB_NAME) as db:
+        await db.execute(
+            "UPDATE deposits SET status='rejected' WHERE id=?",
+            (deposit_id,)
         )
         await db.commit()
